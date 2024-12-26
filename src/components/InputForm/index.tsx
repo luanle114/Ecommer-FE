@@ -3,15 +3,16 @@ import { WrapperInputStyled } from './InputForm.style';
 
 export interface IInputFormProps {
   placeholder: string;
+  onChange: (param?: any) => void;
+  value: string;
   [key: string]: any;
 }
 
 const InputForm = (props: IInputFormProps) => {
-  const [valueInput, setValueInput] = React.useState('');
-  const { placeholder = 'Nhập text', ...rest } = props;
+  const { placeholder = 'Nhập text', onChange, value, ...rest } = props;
 
   return (
-    <WrapperInputStyled placeholder={placeholder} value={valueInput} {...rest} />
+    <WrapperInputStyled placeholder={placeholder} value={value} onChange={(e: any) => onChange(e)} {...rest} />
   )
 }
 

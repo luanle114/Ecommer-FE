@@ -1,19 +1,31 @@
-import { Button } from "antd";
 import React from "react";
 import { BaseButtonProps } from "antd/es/button/button";
+import { StyledButton } from "./Button.style";
 
 export interface ButtonComponentProps {
   size: BaseButtonProps["size"];
   textBtn: string;
+  onSubmit: (param?: any) => void;
+  disabled?: boolean;
+  styledButton?: any;
   [key: string]: any;
 }
 
 const ButtonComponent = (props: ButtonComponentProps) => {
-  const { size, textBtn, ...rest } = props;
+  const { size, textBtn, onSubmit, disabled, styledButton, ...rest } = props;
   return (
-    <Button size={size} {...rest}>
+    <StyledButton
+      size={size} 
+      onClick={onSubmit} 
+      disabled={disabled}
+      style={{
+        ...styledButton,
+        background: disabled ? '#ccc' : styledButton.background,
+      }}
+      {...rest}
+    >
       {textBtn}
-    </Button>
+    </StyledButton>
   );
 };
 

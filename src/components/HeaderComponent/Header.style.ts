@@ -30,4 +30,5 @@ export const WrapperTextCart = styled.div`
   color: #fff;
   display: flex;
   align-items: end;
+  cursor: pointer;
 `;
