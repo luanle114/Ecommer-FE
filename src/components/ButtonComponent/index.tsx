@@ -20,7 +20,7 @@ const ButtonComponent = (props: ButtonComponentProps) => {
       disabled={disabled}
       style={{
         ...styledButton,
-        background: disabled ? '#ccc' : styledButton.background,
+        background: disabled ? '#ccc' : styledButton?.background,
       }}
       {...rest}
     >

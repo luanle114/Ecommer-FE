@@ -13,9 +13,11 @@ import {
 } from "@ant-design/icons";
 import ButtonInputSearch from "../ButtonInputSearch";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const HeaderComponent = () => {
   const navigate = useNavigate();
+  const userData = useSelector((state: any) => state.user);
   const handleLogin = () => {
     navigate('/sign-in');
   }
@@ -43,13 +45,19 @@ const HeaderComponent = () => {
         <Col span={6} style={{ display: "flex", gap: "54px", alignItems: 'center' }}>
           <WrapperHeaderAccount>
             <UserOutlined style={{ fontSize: "30px" }} />
-            <div>
-              <WrapperTextCart onClick={handleLogin}>Đăng Nhập / Đăng Ký</WrapperTextCart>
-              <div style={{ display: "flex" }}>
-                <WrapperTextCart>Tài Khoản</WrapperTextCart>
-                <CaretDownOutlined />
+            {userData.name ? 
+              <div>
+                {userData?.name}
+              </div> 
+              : 
+              <div>
+                <WrapperTextCart onClick={handleLogin}>Đăng Nhập / Đăng Ký</WrapperTextCart>
+                <div style={{ display: "flex" }}>
+                  <WrapperTextCart>Tài Khoản</WrapperTextCart>
+                  <CaretDownOutlined />
+                </div>
               </div>
-            </div>
+            }
           </WrapperHeaderAccount>
           <div>
             <div style={{ display: "flex" }}>

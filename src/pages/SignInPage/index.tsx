@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   WrapperContainerLeft,
   WrapperContainerRight,
@@ -11,6 +11,10 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
 import UserService from "../../services/UserServices";
 import { useMutationHooks } from "../../hooks/useMutation";
+import LoadingComponent from "../../components/LoadingComponent";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../redux/slice/userSlice";
 
 export interface SignInKey {
   email: string,
@@ -28,8 +32,9 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const mutation = useMutationHooks(
     (data: SignUpFormKey) => UserService.loginUser(data)
-  )
-  console.log("~ ~ mutation:", mutation);
+  );
+  const { data, isPending, isSuccess, isError } = mutation as any;
+  const dispatch = useDispatch();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDataSignIn({
@@ -53,7 +58,29 @@ const SignInPage = () => {
 
   const handleSubmit = () => {
     mutation.mutate(dataSignIn as any)
+  };
+
+  const handleGetUserDetails = async (id: string, access_token: string) => {
+    const res = await UserService.getUserDetails(id, access_token);
+    dispatch(updateUser({...res?.data, access_token: access_token}));
+    return res;
   }
+
+  useEffect(() => {
+    if(isSuccess) {
+      navigate('/');
+      localStorage.setItem('access_token', data?.access_token);
+      if(data?.access_token) {
+        const decoded: any = jwtDecode(data?.access_token);
+        if(decoded?.id){
+          handleGetUserDetails(decoded?.id, data?.access_token);
+        }
+      }
+    }
+    else if(isError) {
+      console.log("Error");
+    }
+  }, [isSuccess, isError]);
 
   return (
     <div
@@ -90,22 +117,25 @@ const SignInPage = () => {
             </span>
             <InputForm name="password" placeholder="Nhập mật khẩu" type={isShowPassword ? 'text' : 'password'} value={dataSignIn.password} onChange={onChange}/>
           </div>
-          <ButtonComponent
-            size="large"
-            textBtn="Đăng nhập"
-            styledButton={{
-              color: "#fff",
-              background: "rgb(255, 57, 69)",
-              height: "48px",
-              width: "100%",
-              border: "none",
-              fontSize: "15px",
-              fontWeight: "700",
-              margin: '26px 0 10px'
-            }}
-            onSubmit={handleSubmit}
-            disabled={isDisableButton}
-          />
+          {data?.status === "Error" && <span style={{color: 'red'}}>{data?.message}</span>}
+          <LoadingComponent isLoading={isPending}>
+            <ButtonComponent
+              size="large"
+              textBtn="Đăng nhập"
+              styledButton={{
+                color: "#fff",
+                background: "rgb(255, 57, 69)",
+                height: "48px",
+                width: "100%",
+                border: "none",
+                fontSize: "15px",
+                fontWeight: "700",
+                margin: '26px 0 10px'
+              }}
+              onSubmit={handleSubmit}
+              disabled={isDisableButton}
+            />
+          </LoadingComponent>
           <p><WrapperText>Quên mật khẩu?</WrapperText></p>
           <p>Chưa có tài khoản? <WrapperText onClick={handleSignUp}>Tạo tài khoản</WrapperText></p>
         </WrapperContainerLeft>

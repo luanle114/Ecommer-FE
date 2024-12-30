@@ -1,10 +1,14 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { WrapperContainerLeft, WrapperContainerRight, WrapperText } from './SignUpPage.style';
 import InputForm from '../../components/InputForm';
 import ButtonComponent from '../../components/ButtonComponent';
 import { Image } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useMutationHooks } from '../../hooks/useMutation';
+import UserService from '../../services/UserServices';
+import LoadingComponent from '../../components/LoadingComponent';
+import { successMessage } from '../../components/Message';
 
 export interface SignUpKey {
   email: string,
@@ -23,6 +27,11 @@ const SignUpPage = () => {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const mutation = useMutationHooks(
+    (data: SignUpFormKey) => UserService.signUpUser(data)
+  );
+  console.log("~ ~ mutation:", mutation);
+  const { data, isPending, isError, isSuccess } = mutation as any;
 
   const handleSignIn = () => {
     navigate('/sign-in');
@@ -35,7 +44,7 @@ const SignUpPage = () => {
   };
 
   const handleSubmit = () => {
-    
+    mutation.mutate(dataSignUp as any);
   };
 
   const isDisableButton = useMemo(() => {
@@ -47,6 +56,17 @@ const SignUpPage = () => {
 
     return Object.values(validFields).some((x: any) => !x)
   }, [dataSignUp]);
+
+  useEffect(() => {
+    if(isSuccess){
+      successMessage("Dang ky thanh cong");
+      handleSubmit();
+    }
+    else if(isError){
+      successMessage("Dang ky that bai");
+
+    }
+  }, [isSuccess, isError]);
 
   return (
     <div
@@ -99,21 +119,24 @@ const SignUpPage = () => {
             </span>
             <InputForm name="confirmPassword" placeholder="Nhâp lại password" type={isShowConfirmPassword ? 'text' : 'password'} value={dataSignUp.confirmPassword} onChange={handleOnChange}/>
           </div>
-          <ButtonComponent
-            size="large"
-            textBtn="Đăng ký"
-            style={{
-              color: "#fff",
-              height: "48px",
-              width: "100%",
-              border: "none",
-              fontSize: "15px",
-              fontWeight: "700",
-              margin: '26px 0 10px'
-            }}
-            onSubmit={handleSubmit}
-            disabled={isDisableButton}
-          />
+          {data?.status === "Error" && <span style={{color: 'red'}}>{data?.message}</span>}
+          <LoadingComponent isLoading={isPending} >
+            <ButtonComponent
+              size="large"
+              textBtn="Đăng ký"
+              style={{
+                color: "#fff",
+                height: "48px",
+                width: "100%",
+                border: "none",
+                fontSize: "15px",
+                fontWeight: "700",
+                margin: '26px 0 10px'
+              }}
+              onSubmit={handleSubmit}
+              disabled={isDisableButton}
+            />
+          </LoadingComponent>
           <p>Bạn đã có tài khoản? <WrapperText onClick={handleSignIn}>Đăng nhập</WrapperText></p>
         </WrapperContainerLeft>
         <WrapperContainerRight>
