@@ -33,7 +33,7 @@ const SignInPage = () => {
   const mutation = useMutationHooks(
     (data: SignUpFormKey) => UserService.loginUser(data)
   );
-  const { data, isPending, isSuccess, isError } = mutation as any;
+  const { data, isPending, isSuccess } = mutation as any;
   const dispatch = useDispatch();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,12 +64,12 @@ const SignInPage = () => {
     const res = await UserService.getUserDetails(id, access_token);
     dispatch(updateUser({...res?.data, access_token: access_token}));
     return res;
-  }
+  };
 
   useEffect(() => {
     if(isSuccess) {
       navigate('/');
-      localStorage.setItem('access_token', data?.access_token);
+      localStorage.setItem('access_token', JSON.stringify(data?.access_token));
       if(data?.access_token) {
         const decoded: any = jwtDecode(data?.access_token);
         if(decoded?.id){
@@ -77,10 +77,7 @@ const SignInPage = () => {
         }
       }
     }
-    else if(isError) {
-      console.log("Error");
-    }
-  }, [isSuccess, isError]);
+  }, [isSuccess]);
 
   return (
     <div
