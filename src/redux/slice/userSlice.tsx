@@ -4,13 +4,17 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 export interface UserState {
   name: string,
   email: string,
-  access_token: string
+  address: string,
+  phone: string,
+  access_token: string;
 };
 
 const initialState: UserState = {
   name: '',
   email: '',
-  access_token: ''
+  address: '',
+  phone: '',
+  access_token: '',
 };
 
 export const userSlice = createSlice({
@@ -22,9 +26,14 @@ export const userSlice = createSlice({
       state.name = name;
       state.email = email;
       state.access_token = access_token
+    },
+    resetUser: (state) => {
+      state.name = '';
+      state.email = '';
+      state.access_token = ''
     }
   },
 });
 
-export const { updateUser } = userSlice.actions;
+export const { updateUser, resetUser } = userSlice.actions;
 export default userSlice.reducer;

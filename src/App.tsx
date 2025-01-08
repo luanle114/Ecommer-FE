@@ -35,15 +35,14 @@ const App = () => {
     }
   }, []);
 
-  axiosInstance.interceptors.response.use(async (response) => {
+  axiosInstance.interceptors.request.use(async (config) => {
     const currentTime = new Date();
-    const { config } = response;
     const { decoded } = handleDecoded();
-    if(decoded.exp * 1000 < currentTime.getTime()) {
+    if(decoded.exp < currentTime.getTime() / 1000) {
       const data = await UserService.refreshToken();
       config.headers['token'] = `Bearer ${data?.access_token}`;
     }
-    return response;
+    return config;
   },  (error) => {
     return Promise.reject(error);
   });

@@ -12,6 +12,15 @@ const UserService = {
       console.log(error);
     }
   },
+  logoutUser: async () => {
+    try {
+      const res = await axios.post(`${process.env.VITE_API_URL_BACKEND}/user/log-out`);
+      return res.data;
+    }
+    catch(error) {
+      console.log(error);
+    }
+  },
   signUpUser: async (payload: any) => {
     try {
       const res = await axios.post(`${process.env.VITE_API_URL_BACKEND}/user/sign-up`, payload);

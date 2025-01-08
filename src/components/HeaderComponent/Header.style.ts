@@ -32,3 +32,10 @@ export const WrapperTextCart = styled.div`
   align-items: end;
   cursor: pointer;
 `;
+
+export const WrapperContentPopup = styled.p`
+  cursor: pointer;
+  &:hover {
+    color: rgb(26, 148, 255);
+  }
+`;

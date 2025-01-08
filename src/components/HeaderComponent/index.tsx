@@ -1,6 +1,7 @@
-import { Badge, Col } from "antd";
-import React from "react";
+import { Badge, Col, Popover } from "antd";
+import React, { useState } from "react";
 import {
+  WrapperContentPopup,
   WrapperHeader,
   WrapperHeaderAccount,
   WrapperTextCart,
@@ -13,14 +14,33 @@ import {
 } from "@ant-design/icons";
 import ButtonInputSearch from "../ButtonInputSearch";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import UserService from "../../services/UserServices";
+import { resetUser } from "../../redux/slice/userSlice";
+import LoadingComponent from "../LoadingComponent";
 
 const HeaderComponent = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userData = useSelector((state: any) => state.user);
   const handleLogin = () => {
     navigate('/sign-in');
+  };
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    await UserService.logoutUser();
+    dispatch(resetUser());
+    setIsLoading(false);
   }
+
+  const content = (
+    <div>
+      <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => navigate('/profile')} >Thông tin người dùng</WrapperContentPopup>
+    </div>
+  )
 
   return (
     <div
@@ -43,22 +63,28 @@ const HeaderComponent = () => {
           />
         </Col>
         <Col span={6} style={{ display: "flex", gap: "54px", alignItems: 'center' }}>
-          <WrapperHeaderAccount>
-            <UserOutlined style={{ fontSize: "30px" }} />
-            {userData.name ? 
-              <div>
-                {userData?.name}
-              </div> 
-              : 
-              <div>
-                <WrapperTextCart onClick={handleLogin}>Đăng Nhập / Đăng Ký</WrapperTextCart>
-                <div style={{ display: "flex" }}>
-                  <WrapperTextCart>Tài Khoản</WrapperTextCart>
-                  <CaretDownOutlined />
+          <LoadingComponent isLoading={isLoading}>
+            <WrapperHeaderAccount>
+              <UserOutlined style={{ fontSize: "30px" }} />
+              {userData.name ? 
+                <>
+                  <Popover trigger="click" content={content}>
+                    <div>
+                      {userData?.name}
+                    </div>
+                  </Popover>
+                </> 
+                : 
+                <div>
+                  <WrapperTextCart onClick={handleLogin}>Đăng Nhập / Đăng Ký</WrapperTextCart>
+                  <div style={{ display: "flex" }}>
+                    <WrapperTextCart>Tài Khoản</WrapperTextCart>
+                    <CaretDownOutlined />
+                  </div>
                 </div>
-              </div>
-            }
-          </WrapperHeaderAccount>
+              }
+            </WrapperHeaderAccount>
+          </LoadingComponent>
           <div>
             <div style={{ display: "flex" }}>
               <Badge count={4} size="small">
