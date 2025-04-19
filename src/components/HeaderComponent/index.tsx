@@ -39,6 +39,9 @@ const HeaderComponent = () => {
     <div>
       <WrapperContentPopup onClick={handleLogout}>Đăng xuất</WrapperContentPopup>
       <WrapperContentPopup onClick={() => navigate('/profile')} >Thông tin người dùng</WrapperContentPopup>
+      {userData.isAdmin && (
+        <WrapperContentPopup onClick={() => navigate('/system/admin')} >Quản lý hệ thống</WrapperContentPopup>
+      )}
     </div>
   )
 
@@ -66,7 +69,7 @@ const HeaderComponent = () => {
           <LoadingComponent isLoading={isLoading}>
             <WrapperHeaderAccount>
               <UserOutlined style={{ fontSize: "30px" }} />
-              {userData.name ? 
+              {userData.access_token ? 
                 <>
                   <Popover trigger="click" content={content}>
                     <div>

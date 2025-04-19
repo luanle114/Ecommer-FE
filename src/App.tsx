@@ -6,16 +6,28 @@ import DefaultComponent from "./components/DefaultComponent";
 import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import UserService, { axiosInstance } from "./services/UserServices";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "./redux/slice/userSlice";
+import LoadingComponent from "./components/LoadingComponent";
 
 const App = () => {
   const dispatch = useDispatch();
+  const userData = useSelector((state: any) => state.user);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleGetUserDetails = async (id: string, access_token: string) => {
-    const res = await UserService.getUserDetails(id, access_token);
-    dispatch(updateUser({...res?.data, access_token: access_token}));
-    return res;
+    try{
+      setIsLoading(true);
+      const res = await UserService.getUserDetails(id, access_token);
+      dispatch(updateUser({...res?.data, access_token: access_token}));
+      return res;
+    }
+    catch(error) {
+      console.log('error', error);
+    }
+    finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDecoded = () => {
@@ -49,14 +61,16 @@ const App = () => {
 
   return (
     <React.Fragment>
+      <LoadingComponent isLoading={isLoading} >
       <Router>
         <Routes>
           {routes.map((route) => {
+            const isAdmin = !route.isPrivate || userData?.isAdmin;
             const DefaultLayout = route.isShowHeader ? DefaultComponent : React.Fragment;
             return (
               <Route
                 key={route.path}
-                path={route.path}
+                path={isAdmin ? route.path : ''}
                 element={
                   <DefaultLayout>
                     <route.page />
@@ -66,7 +80,8 @@ const App = () => {
             );
           })}
         </Routes>
-      </Router>
+      </Router>  
+      </LoadingComponent>
     </React.Fragment>
   );
 };

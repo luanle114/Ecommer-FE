@@ -53,6 +53,19 @@ const UserService = {
     catch(error) {
       console.log(error);
     }
+  },
+  updateUser: async (payload: any, id: string) => {
+    try {
+      const res = await axiosInstance.put(`${process.env.VITE_API_URL_BACKEND}/user/update-user/${id}`, payload, {
+        headers: {
+          token: `Bearer ${payload.access_token}`
+        }
+      });
+      return res.data;
+    }
+    catch(error) {
+      console.log(error);
+    }
   }
 };
 

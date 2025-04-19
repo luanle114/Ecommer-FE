@@ -30,7 +30,6 @@ const SignUpPage = () => {
   const mutation = useMutationHooks(
     (data: SignUpFormKey) => UserService.signUpUser(data)
   );
-  console.log("~ ~ mutation:", mutation);
   const { data, isPending, isError, isSuccess } = mutation as any;
 
   const handleSignIn = () => {

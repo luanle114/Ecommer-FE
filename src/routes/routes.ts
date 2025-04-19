@@ -1,3 +1,4 @@
+import AdminPage from "../pages/AdminPage";
 import HomePage from "../pages/HomePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import OrderPage from "../pages/OrderPage";
@@ -48,6 +49,12 @@ export const routes = [
     path: '/profile',
     page: ProfilePage,
     isShowHeader: true
+  },
+  {
+    path: '/system/admin',
+    page: AdminPage,
+    isShowHeader: true,
+    isPrivate: true
   },
   {
     path: '*',
